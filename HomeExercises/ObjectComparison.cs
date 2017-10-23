@@ -1,10 +1,19 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
+using FluentAssertions.Common;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+
+
+    public class ObjectComparison
 	{
+
+
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -15,19 +24,19 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
+                options.Using(actualTsar));
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            /* Решение более читабельно, меньше кода, расширяемость :
+             * при длбовлении в класс Person новых полей нам не придйтся
+             * как в методе AreEqual добовлять 100500 новых сравнений.
+             * Если какое-то поле не нуждается в сравнени, 
+             * к примеру поле Id, то в реализации интерфейса IMemberSelectionRule мы просто 
+             * можем методом where исключить это поле из проверки. 
+             * */
+        }
 
-		[Test]
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -53,18 +62,19 @@ namespace HomeExercises
 		}
 	}
 
-	public class TsarRegistry
+	public class TsarRegistry 
 	{
-		public static Person GetCurrentTsar()
+
+        public static Person GetCurrentTsar()
 		{
 			return new Person(
 				"Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-		}
-	}
+		}  
+    }
 
-	public class Person
-	{
+	public class Person : IMemberSelectionRule
+    {
 		public static int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
@@ -80,5 +90,24 @@ namespace HomeExercises
 			Weight = weight;
 			Parent = parent;
 		}
-	}
+
+        public bool IncludesMembers
+        {
+            get {return false; }
+        }
+
+        public IEnumerable<SelectedMemberInfo> SelectMembers(IEnumerable<SelectedMemberInfo> selectedMembers,
+            ISubjectInfo context,
+            IEquivalencyAssertionOptions config)
+        {
+
+            return selectedMembers.Where(m => m.Name != "Id")
+            .Except(
+            config.GetSubjectType(context)
+                .GetNonPrivateProperties()
+                .Where(p => p.GetMethod.IsAssembly)
+                .Select(SelectedMemberInfo.Create)
+                );
+        }
+    }
 }
