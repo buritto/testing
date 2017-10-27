@@ -25,14 +25,12 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
-                options.Using(actualTsar));
+            options.Excluding(person => 
+            person.SelectedMemberPath.EndsWith("Id")));
 
             /* Решение более читабельно, меньше кода, расширяемость :
-             * при длбовлении в класс Person новых полей нам не придйтся
+             * при добовлении в класс Person новых полей нам не придйтся
              * как в методе AreEqual добовлять 100500 новых сравнений.
-             * Если какое-то поле не нуждается в сравнени, 
-             * к примеру поле Id, то в реализации интерфейса IMemberSelectionRule мы просто 
-             * можем методом where исключить это поле из проверки. 
              * */
         }
 
@@ -73,7 +71,7 @@ namespace HomeExercises
 		}  
     }
 
-	public class Person : IMemberSelectionRule
+	public class Person
     {
 		public static int IdCounter = 0;
 		public int Age, Height, Weight;
@@ -91,23 +89,6 @@ namespace HomeExercises
 			Parent = parent;
 		}
 
-        public bool IncludesMembers
-        {
-            get {return false; }
-        }
 
-        public IEnumerable<SelectedMemberInfo> SelectMembers(IEnumerable<SelectedMemberInfo> selectedMembers,
-            ISubjectInfo context,
-            IEquivalencyAssertionOptions config)
-        {
-
-            return selectedMembers.Where(m => m.Name != "Id")
-            .Except(
-            config.GetSubjectType(context)
-                .GetNonPrivateProperties()
-                .Where(p => p.GetMethod.IsAssembly)
-                .Select(SelectedMemberInfo.Create)
-                );
-        }
     }
 }

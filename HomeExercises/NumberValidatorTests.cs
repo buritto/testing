@@ -8,50 +8,39 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
         [Test]
-        public void CreateNumValidPrecisionIsZeroException()
+        public void CreateInvalideNumberValidator()
         {
             int precision = 0;
             int scalar = 2;
 
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
 
-        }
 
-        [Test]
-        public void CreateNumValidWithPrecisionIsNegativeException()
-        {
-            var precision = -1;
-            var scalar = 2;
+            precision = -1;
+            scalar = 2;
 
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
-        }
 
-        [Test]
-        public void CreateNumValidWithScalsNegativeException()
-        {
-            var precision = 1;
-            var scalar = -1;
+
+            precision = 1;
+            scalar = -1;
 
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
-        }
 
-        [Test]
-        public void CreateNumValidWithScalIsZeroNotException()
-        {
-            var precision = 1;
-            var scalar = 0;
+
+            precision = 1;
+            scalar = 0;
 
             Assert.DoesNotThrow(() => new NumberValidator(precision, scalar, true));
-        }
 
-        [Test]
-        public void CreateNumValidWithScalarEqualPrecisionException()
-        {
-            var precision = 10;
-            var scalar = precision;
+
+            precision = 10;
+            scalar = precision;
 
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
         }
+
+
 
         [TestCase(4, 2, "+0.0")]
         [TestCase(4, 2, "-0.0")]
@@ -60,7 +49,7 @@ namespace HomeExercises
         [TestCase(4, 2, "0")]
         [TestCase(5, 2, "+00.00")]
         [TestCase(5, 2, "-00.00")]
-        public void IsValidNumberInputZeroTrue(int precision, int scalar,
+        public void IsValidNumberTrue(int precision, int scalar,
             string differentZero)
         {
             var res = new NumberValidator(precision, scalar, false).
@@ -70,39 +59,23 @@ namespace HomeExercises
 
         }
 
-        [TestCase(4, 2, "-11.00")]
-        public void IsValidNumberInputNegativeNumberFalse(int precision, int scalar,
+        [TestCase(4, 2, "-11.00", ExpectedResult = false)]
+        [TestCase(5, 2, "11.00", ExpectedResult =  true)]
+        [TestCase(6, 2, "+11.00", ExpectedResult = true)]
+        public bool IsValidNumberInputNegativeNumberFalse(int precision, int scalar,
             string value)
         {
 
             var res = new NumberValidator(precision, scalar, true).IsValidNumber(value);
-
-            Assert.IsFalse(res);
+            return res;
         }
 
-        [TestCase(5, 2, "11.00")]
-        [TestCase(6, 2, "+11.00")]
-        public void IsValidNumberInputPositiveTrue(int precision, int scalar,
-            string value)
-        {
-            var res = new NumberValidator(precision, scalar, true).IsValidNumber(value);
-
-            Assert.IsTrue(res);
-        }
-
-        [Test]
-        public void IsValidNumberInpitZeroWithSignTrueFalse()
-        {
-            Assert.IsTrue(new NumberValidator(3, 2, true).IsValidNumber("+0.0"));
-            Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.0"));
-        }
 
         [TestCase(5, 3, "+11111.222")]
-        [TestCase(5, 3, "-11111.222")]
         [TestCase(4, 3, "21111.222")]
         [TestCase(5, 3, "1111.2233")]
         [TestCase(5, 1, "1111.")]
-        public void IsValidNumberWithIncorrectValueLengthFasle(int precision, int scalar,
+        public void IsValidNumberWithIncorrectValueLengthFalse(int precision, int scalar,
             string valueWithIncorrectLength)
         {
 
@@ -115,6 +88,7 @@ namespace HomeExercises
         [TestCase(3, 2, "aa.01")]
         [TestCase(4, 3, " 1.2 ")]
         [TestCase(4, 3, "1 . 2")]
+        [TestCase(5, 4, "12.31.12")]
         public void IsValidNumberWhenValueIsLetterFalse(int precision, int scalar,
             string lineWithLetters)
         {
@@ -134,12 +108,6 @@ namespace HomeExercises
         public void IsValidNumberWhenValueIsEmptyLineFalse()
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(string.Empty));
-        }
-
-        [Test]
-        public void IsValidNumberWhenValueContainsTwoDotFalse()
-        {
-            Assert.IsFalse(new NumberValidator(5, 4, true).IsValidNumber("12.31.12"));
         }
 
         //[Test]
