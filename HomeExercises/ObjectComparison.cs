@@ -23,10 +23,10 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
+                    
 		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
             options.Excluding(person => 
-            person.SelectedMemberPath.EndsWith("Id")));
+            person.SelectedMemberInfo.Name == "Id"));
 
             /* Решение более читабельно, меньше кода, расширяемость :
              * при добовлении в класс Person новых полей нам не придйтся

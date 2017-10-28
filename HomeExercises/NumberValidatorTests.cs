@@ -7,37 +7,14 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        [Test]
-        public void CreateInvalideNumberValidator()
+
+        [TestCase(0, 2)]
+        [TestCase(-1, 2)]
+        [TestCase(1, -1)]   
+        [TestCase(10, 10)]
+        public void CreateInvalideNumberValidator(int precision, int scalar)
         {
-            int precision = 0;
-            int scalar = 2;
-
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
-
-
-            precision = -1;
-            scalar = 2;
-
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
-
-
-            precision = 1;
-            scalar = -1;
-
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
-
-
-            precision = 1;
-            scalar = 0;
-
-            Assert.DoesNotThrow(() => new NumberValidator(precision, scalar, true));
-
-
-            precision = 10;
-            scalar = precision;
-
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scalar, true));
+            Assert.That(() => new NumberValidator(precision, scalar, true), Throws.ArgumentException);
         }
 
 
@@ -49,7 +26,7 @@ namespace HomeExercises
         [TestCase(4, 2, "0")]
         [TestCase(5, 2, "+00.00")]
         [TestCase(5, 2, "-00.00")]
-        public void IsValidNumberTrue(int precision, int scalar,
+        public void IsValidNumberWithDifferentZeroTrue(int precision, int scalar,
             string differentZero)
         {
             var res = new NumberValidator(precision, scalar, false).
@@ -59,12 +36,13 @@ namespace HomeExercises
 
         }
 
-        [TestCase(4, 2, "-11.00", ExpectedResult = false)]
-        [TestCase(5, 2, "11.00", ExpectedResult =  true)]
-        [TestCase(6, 2, "+11.00", ExpectedResult = true)]
-        public bool IsValidNumberInputNegativeNumberFalse(int precision, int scalar,
-            string value)
+        [TestCase("-11.00", ExpectedResult = false)]
+        [TestCase("11.00", ExpectedResult =  true)]
+        [TestCase("+11.00", ExpectedResult = true)]
+        public bool IsValidNumberWithDifferentSign(string value)
         {
+            var precision = 6;
+            var scalar = 2;
 
             var res = new NumberValidator(precision, scalar, true).IsValidNumber(value);
             return res;
