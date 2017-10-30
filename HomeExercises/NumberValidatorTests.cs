@@ -41,7 +41,7 @@ namespace HomeExercises
             string valueWithIncorrectLength, bool onlyPositive = false)
         {
 
-            var res = new NumberValidator(precision, scalar).
+            var res = new NumberValidator(precision, scalar, onlyPositive).
                 IsValidNumber(valueWithIncorrectLength);
             return res;
         }
