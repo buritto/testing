@@ -44,9 +44,6 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			new Person("Vasili III of Russia", 28, 170, 60, null));
-
-
-            //actualTsar.newId.Id = 3;
             // Какие недостатки у такого подхода? 
             Assert.True(AreEqual(actualTsar, expectedTsar));
 
