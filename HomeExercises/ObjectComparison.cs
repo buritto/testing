@@ -25,15 +25,18 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
                     
 		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
-            options.Excluding(person => 
-            person.SelectedMemberInfo.Name == "Id"));
+            options.AllowingInfiniteRecursion().Excluding(person => 
+            person.SelectedMemberInfo.Name == nameof(Person.Id) &&
+            person.SelectedMemberInfo.DeclaringType == typeof(Person)
+            ));
+
 
             /* Решение более читабельно, меньше кода, расширяемость :
              * при добовлении в класс Person новых полей нам не придйтся
              * как в методе AreEqual добовлять 100500 новых сравнений.
              * */
         }
-
+                
         [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -42,8 +45,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+
+            //actualTsar.newId.Id = 3;
+            // Какие недостатки у такого подхода? 
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 
 		}
 
@@ -71,23 +76,31 @@ namespace HomeExercises
 		}  
     }
 
+    public class Smth
+    {
+        public int Id;
+    }
+
 	public class Person
     {
 		public static int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
 		public Person Parent;
+        //public Smth newId;
 		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person parent)
 		{
+            
 			Id = IdCounter++;
 			Name = name;
 			Age = age;
 			Height = height;
 			Weight = weight;
 			Parent = parent;
-		}
+		    //newId = new Smth() { Id = Id };
+        }
 
 
     }

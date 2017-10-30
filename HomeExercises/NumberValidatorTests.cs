@@ -18,68 +18,32 @@ namespace HomeExercises
         }
 
 
-
-        [TestCase(4, 2, "+0.0")]
-        [TestCase(4, 2, "-0.0")]
-        [TestCase(4, 2, "-00.0")]
-        [TestCase(4, 2, "+00.0")]
-        [TestCase(4, 2, "0")]
-        [TestCase(5, 2, "+00.00")]
-        [TestCase(5, 2, "-00.00")]
-        public void IsValidNumberWithDifferentZeroTrue(int precision, int scalar,
-            string differentZero)
-        {
-            var res = new NumberValidator(precision, scalar, false).
-                IsValidNumber(differentZero);
-
-            Assert.IsTrue(res);
-
-        }
-
-        [TestCase("-11.00", ExpectedResult = false)]
-        [TestCase("11.00", ExpectedResult =  true)]
-        [TestCase("+11.00", ExpectedResult = true)]
-        public bool IsValidNumberWithDifferentSign(string value)
-        {
-            var precision = 6;
-            var scalar = 2;
-
-            var res = new NumberValidator(precision, scalar, true).IsValidNumber(value);
-            return res;
-        }
-
-
-        [TestCase(5, 3, "+11111.222")]
-        [TestCase(4, 3, "21111.222")]
-        [TestCase(5, 3, "1111.2233")]
-        [TestCase(5, 1, "1111.")]
-        public void IsValidNumberWithIncorrectValueLengthFalse(int precision, int scalar,
-            string valueWithIncorrectLength)
+        [TestCase(4, 2, "+0.0", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase(4, 2, "-0.0", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase(4, 2, "-00.0", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase(4, 2, "+00.0", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase(4, 2, "0", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase(5, 2, "+00.00", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase(5, 2, "-00.00", ExpectedResult = true, TestName = "DifferentZero")]
+        [TestCase( 6, 2, "-11.00", true,ExpectedResult = false, TestName = "DifferenSign")]
+        [TestCase(6, 2, "11.00",true, ExpectedResult = true, TestName = "DifferenSign")]
+        [TestCase( 6, 2, "+11.00",true, ExpectedResult = true, TestName = "DifferenSign")]
+        [TestCase(5, 3, "+11111.222",ExpectedResult = false, TestName = "IncorrectLengthLine")]
+        [TestCase(4, 3, "21111.222", ExpectedResult = false, TestName = "IncorrectLengthLine")]
+        [TestCase(5, 3, "1111.2233", ExpectedResult = false, TestName = "IncorrectLengthLine")]
+        [TestCase(5, 1, "1111.", ExpectedResult = false, TestName = "IncorrectLengthLine")]
+        [TestCase(3, 2, "aa.01", ExpectedResult = false, TestName = "IncorrectLine")]
+        [TestCase(4, 3, " 1.2 ", ExpectedResult = false, TestName = "IncorrectLine")]
+        [TestCase(4, 3, "1 . 2", ExpectedResult = false, TestName = "IncorrectLine")]
+        [TestCase(5, 4, "12.31.12", ExpectedResult = false,  TestName = "IncorrectLine")]
+        [TestCase(3, 2, null, ExpectedResult = false, TestName = "IncorrectLine")]
+        public bool TestValidNumber(int precision, int scalar,
+            string valueWithIncorrectLength, bool onlyPositive = false)
         {
 
             var res = new NumberValidator(precision, scalar).
                 IsValidNumber(valueWithIncorrectLength);
-            Assert.IsFalse(res);
-        }
-
-
-        [TestCase(3, 2, "aa.01")]
-        [TestCase(4, 3, " 1.2 ")]
-        [TestCase(4, 3, "1 . 2")]
-        [TestCase(5, 4, "12.31.12")]
-        public void IsValidNumberWhenValueIsLetterFalse(int precision, int scalar,
-            string lineWithLetters)
-        {
-            var res = new NumberValidator(precision, scalar, true).
-                IsValidNumber(lineWithLetters);
-
-            Assert.IsFalse(res);
-        }
-
-        [Test]
-        public void IsValidNumberWhenValueIsNullFalse()
-        {
-            Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(null));
+            return res;
         }
 
         [Test]
